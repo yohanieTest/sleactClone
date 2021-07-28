@@ -5,16 +5,24 @@ import axios from "axios";
 
 const SignUp = () => {
     const [email, onChangeEmail] = useInput('');
-    const [nickname, onChangeNickname] = useInput('');
+    const [nickname, setNickName] = useState('');
     const [password, , setPassword] = useInput('');
     const [passwordCheck, , setPasswordCheck] = useInput('')
     const [mismatchError, setMismatchError] = useState(false);
     const [signUpError, setSignUpError] = useState('');
     const [signUpSuccess, setSignUpSuccess] = useState(false);
+    const [nickNameError, setNickNameError] = useState(false);
+
+    const onChangeNickname = useCallback((e) => {
+        setNickName(e.target.value);
+        setNickNameError(false);
+    }, [])
 
     const onChangePassword = useCallback((e) => {
         setPassword(e.target.value);
-        setMismatchError(e.target.value !== passwordCheck);
+        if (passwordCheck) {
+            setMismatchError(e.target.value !== passwordCheck);
+        }
     }, [passwordCheck]);
 
     const onChangePasswordCheck = useCallback((e) => {
@@ -26,7 +34,10 @@ const SignUp = () => {
         e.preventDefault();
         setSignUpError('');
         setSignUpSuccess(false);
-        console.log(email, nickname, password, passwordCheck);
+        if (!nickname) {
+            setNickNameError(true);
+        }
+
         if (!mismatchError && nickname) {
             axios.post('/api/users', {
                 email,
@@ -77,7 +88,7 @@ const SignUp = () => {
                         />
                     </div>
                     {mismatchError && <Error>비밀번호가 일치하지 않습니다.</Error>}
-                    {!nickname && <Error>닉네임을 입력해주세요.</Error>}
+                    {nickNameError && <Error>닉네임을 입력해주세요.</Error>}
                     {signUpError && <Error>{signUpError}</Error>}
                     {signUpSuccess && <Success>회원가입되었습니다! 로그인해주세요.</Success>}
                 </Label>
