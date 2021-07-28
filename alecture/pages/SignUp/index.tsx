@@ -28,17 +28,14 @@ const SignUp = () => {
         setSignUpSuccess(false);
         console.log(email, nickname, password, passwordCheck);
         if (!mismatchError && nickname) {
-            console.log("서버로");
             axios.post('/api/users', {
                 email,
                 nickname,
                 password,
             }).then((response) => {
-                console.log(response);
                 setSignUpSuccess(true);
             })
                 .catch((error) => {
-                    console.log(error.response);
                     setSignUpError(error.response.data);
                 })
                 .finally(() => { });
