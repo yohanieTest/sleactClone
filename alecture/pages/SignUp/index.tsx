@@ -14,7 +14,6 @@ const SignUp = () => {
 
     const onChangePassword = useCallback((e) => {
         setPassword(e.target.value);
-        console.log()
         setMismatchError(e.target.value !== passwordCheck);
     }, [passwordCheck]);
 
