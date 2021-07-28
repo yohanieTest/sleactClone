@@ -2,8 +2,15 @@ import useInput from "@hooks/useInput";
 import React, { useState, useCallback } from "react";
 import { Form, Label, Input, LinkContainer, Button, Header, Error, Success } from "./styles";
 import axios from "axios";
+import { Link, Redirect } from "react-router-dom";
+import useSWR from "swr";
+import fetcher from "@utils/fetcher";
 
 const SignUp = () => {
+    const { data, error, revalidate } = useSWR("http://localHost:3095/api/users", fetcher, {
+        dedupingInterval: 1000,
+    });
+
     const [email, onChangeEmail] = useInput('');
     const [nickname, setNickName] = useState('');
     const [password, , setPassword] = useInput('');
@@ -45,14 +52,21 @@ const SignUp = () => {
                 password,
             }).then((response) => {
                 setSignUpSuccess(true);
+            }).catch((error) => {
+                setSignUpError(error.response.data);
             })
-                .catch((error) => {
-                    setSignUpError(error.response.data);
-                })
                 .finally(() => { });
         }
     }, [email, nickname, password, passwordCheck]);
 
+
+    if (data === undefined) {
+        return <div>로딩중....</div>
+    }
+
+    if (data) {
+        return <Redirect to={"/workspace/channel"} />
+    }
 
     return (
         <div id="container">
@@ -96,7 +110,7 @@ const SignUp = () => {
             </Form>
             <LinkContainer>
                 이미 회원이신가요?&nbsp;
-                <a href="/login">로그인 하러가기</a>
+                <Link to="/login">로그인 하러가기</Link>
             </LinkContainer>
         </div>
     )
