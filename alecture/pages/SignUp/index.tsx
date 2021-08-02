@@ -46,7 +46,7 @@ const SignUp = () => {
         }
 
         if (!mismatchError && nickname) {
-            axios.post('/api/users', {
+            axios.post('http://localHost:3095/api/users', {
                 email,
                 nickname,
                 password,
@@ -54,8 +54,7 @@ const SignUp = () => {
                 setSignUpSuccess(true);
             }).catch((error) => {
                 setSignUpError(error.response.data);
-            })
-                .finally(() => { });
+            }).finally(() => { });
         }
     }, [email, nickname, password, passwordCheck]);
 
@@ -65,7 +64,7 @@ const SignUp = () => {
     }
 
     if (data) {
-        return <Redirect to={"/workspace/channel"} />
+        return <Redirect to={"/workspace/sleact/channel/일반"} />
     }
 
     return (

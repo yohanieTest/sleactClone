@@ -11,9 +11,10 @@ const LogIn = () => {
     //revalidata - 원할 때 콜,
     //dedupingInterval 주기적으로 호출되지만 dedupingInterval 기간 내에는 캐시에서 불러옵니다.
     const { data, error, revalidate, mutate } = useSWR("http://localHost:3095/api/users", fetcher, {
-        dedupingInterval: 100000,
+        dedupingInterval: 1000,
     });
     const [logInError, setLogInError] = useState(false);
+    const [noUser, setNoUser] = useState(false);
     const [email, onChangeEmail] = useInput('');
     const [password, onChangePassword] = useInput('');
 
@@ -21,6 +22,7 @@ const LogIn = () => {
     const onSubmit = useCallback((e) => {
         e.preventDefault();
         setLogInError(false);
+        setNoUser(false);
         axios.post('http://localHost:3095/api/users/login',
             { email, password },
             {
@@ -30,6 +32,7 @@ const LogIn = () => {
             mutate(response.data, false);   //OPMISITIC UI
         }
         ).catch((error) => {
+            setNoUser(true);
             setLogInError(error.respose?.data?.statusCode === 401);
         })
 
@@ -41,7 +44,7 @@ const LogIn = () => {
 
 
     if (data) {
-        return <Redirect to={"/workspace/channel"} />
+        return <Redirect to={"/workspace/sleact/channel/일반"} />
     }
 
     return (
@@ -61,6 +64,7 @@ const LogIn = () => {
                         <Input type="password" id="password" name="password" value={password} onChange={onChangePassword} />
                     </div>
                     {logInError && <Error>이메일과 비밀번호 조합이 일치하지 않습니다.</Error>}
+                    {noUser && <Error>가입한 회원이 아닙니다.</Error>}
                 </Label>
                 <Button type="submit">로그인</Button>
             </Form>
